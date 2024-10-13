@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { use, useState } from "react"
 import { StepsNavigator } from "@/components/StepsNavigator"
 import { LoginStep } from "@/components/LoginStep"
 import DashboardStep from "@/components/DashboardStep"
@@ -25,6 +25,15 @@ export default function Index() {
   const [step, setStep] = useState(0)
   const [deploymentProgress, setDeploymentProgress] = useState(0)
 
+  const [projectName, setProjectName] = useState("")
+  const [appType, setAppType] = useState('')
+  const [language, setLanguage] = useState('')
+
+  const [users, setUsers] = useState(0)
+  const [storage, setStorage] = useState(0)
+  const [budget, setBudget] = useState(0)
+  const [compliance, setCompliance] = useState<string[]>([])
+
   const handleNext = () => {
     if (step < steps.length - 1) {
       setStep(step + 1)
@@ -46,17 +55,14 @@ export default function Index() {
 
       {step === 0 && <LoginStep onNext={handleNext} />}
       {step === 1 && <DashboardStep onNext={handleNext} />}
-      {step === 2 && <ProjectCreationStep onNext={handleNext} />}
-      {step === 3 && <ConfigurationStep onNext={handleNext} />}
-      {step === 4 && <ReviewStep onNext={handleNext} />}
+      {step === 2 && <ProjectCreationStep onNext={handleNext} setProjectName={setProjectName} setAppType={setAppType} setLanguage={setLanguage} projectName={""} appType={""} language={""} />}
+      {step === 3 && <ConfigurationStep onNext={handleNext} setUsers={setUsers} setStorage={setStorage} setBudget={setBudget} setCompliance={setCompliance} users={0} storage={0} budget={0} compliance={[]}/>}
+      {step === 4 && <ReviewStep onNext={handleNext} budget={0} />}
       {step === 5 && (
-        <DeploymentProgressStep
-          progress={deploymentProgress}
-          setProgress={setDeploymentProgress}
-          onNext={handleNext}
+        <DeploymentProgressStep deploymentProgress={0}
         />
       )}
-      {step === 6 && <CompletionStep />}
+      {step === 6 && <CompletionStep onMonitor={()=>{}}/>}
 
       <div className="mt-4 flex justify-between">
         {step > 0 && <Button onClick={handleBack}>Back</Button>}
