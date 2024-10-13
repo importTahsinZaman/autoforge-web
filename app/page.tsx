@@ -59,7 +59,7 @@ export default function Index() {
       {step === 3 && <ConfigurationStep onNext={handleNext} setUsers={setUsers} setStorage={setStorage} setBudget={setBudget} setCompliance={setCompliance} users={0} storage={0} budget={0} compliance={[]}/>}
       {step === 4 && <ReviewStep onNext={handleNext} budget={0} />}
       {step === 5 && (
-        <DeploymentProgressStep deploymentProgress={0}
+        <DeploymentProgressStep deploymentProgress={2}
         />
       )}
       {step === 6 && <CompletionStep onMonitor={()=>{}}/>}
