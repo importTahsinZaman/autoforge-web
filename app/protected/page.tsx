@@ -14,7 +14,7 @@ export default async function ProtectedPage() {
   const accessToken = await supabase.auth.getSession();
 
   if (!user) {
-    return redirect("/");
+    return redirect("/sign-in");
   }
 
   const checkTokenAndFetchRepos = async () => {
