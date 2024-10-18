@@ -2,7 +2,7 @@ import FetchDataSteps from "@/components/tutorial/fetch-data-steps";
 import { createClient } from "@/utils/supabase/server";
 import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import RepoCard from "@/components/RepoCard";
+import RepoCard from "@/components/repo-card";
 
 export default async function ProtectedPage() {
   const supabase = createClient();
@@ -10,8 +10,6 @@ export default async function ProtectedPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const accessToken = await supabase.auth.getSession();
 
   if (!user) {
     return redirect("/sign-in");
@@ -76,11 +74,6 @@ export default async function ProtectedPage() {
           <p>No personal repositories found.</p>
         )}
       </div>
-
-      {/* <div>
-        <h2 className="font-bold text-2xl mb-4">Next steps</h2>
-        <FetchDataSteps />
-      </div> */}
     </div>
   );
 }
