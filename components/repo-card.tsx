@@ -12,7 +12,7 @@ interface RepoCardProps {
   };
 }
 
-const repoCard: React.FC<RepoCardProps> = ({ repo }) => {
+const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
   return (
     <div className="bg-card text-card-foreground rounded-lg shadow-md p-4">
       <h3 className="font-semibold text-lg mb-2">
