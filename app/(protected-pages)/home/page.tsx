@@ -3,6 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import RepoCard from "@/components/repo-card";
+import ProjectCard from "@/components/project-card";
+import Link from 'next/link';
 
 export default async function ProtectedPage() {
   const supabase = createClient();
@@ -35,6 +37,10 @@ export default async function ProtectedPage() {
 
   let repos = null;
   let personal_repos = null;
+  let af_projects = null; 
+
+  af_projects = [{"name": "CoolProject", "id":"abcdef", "description": "An AI-driven blockchain project."}]; // TODO: fetch autoforge projects
+
   try {
     repos = await checkTokenAndFetchRepos();
     if (repos) {
@@ -55,24 +61,24 @@ export default async function ProtectedPage() {
           user
         </div>
       </div>
-      <div className="flex flex-col gap-2 items-start">
-        <h2 className="font-bold text-2xl mb-4">Your user details</h2>
-        <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
-          {JSON.stringify(user, null, 2)}
-        </pre>
-      </div>
 
       <div>
-        <h2 className="font-bold text-2xl mb-4">Your Personal Repositories</h2>
-        {personal_repos && personal_repos.length > 0 ? (
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-bold text-2xl">Your Autoforge Projects</h2>
+          <Link href="/projects/new" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            New Project
+          </Link>
+        </div>
+        {af_projects && af_projects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {personal_repos.map((repo: any) => (
-              <RepoCard key={repo.id} repo={repo} />
+            {af_projects.map((project: any) => (
+              <ProjectCard key={project.id} project={project} />
             ))}
           </div>
         ) : (
-          <p>No personal repositories found.</p>
+          <p>No Autoforge projects found.</p>
         )}
+
       </div>
     </div>
   );
