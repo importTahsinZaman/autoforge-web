@@ -14,7 +14,7 @@ interface ProjectCardProps {
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
-    <Link href={`/projects/${project.id}`} passHref>
+    <Link href={`/projects/${project.id}`}>
       <div
         className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4
                    hover:bg-gray-100 dark:hover:bg-gray-700

@@ -15,26 +15,19 @@ export default async function ProtectedPage() {
     return redirect("/sign-in");
   }
 
-  let af_projects = null;
+  const { data: af_projects, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
 
-  af_projects = [
-    {
-      name: "CoolProject",
-      id: "abcdef",
-      description: "An AI-driven blockchain project.",
-    },
-  ]; // TODO: fetch autoforge projects
+  if (error) {
+    console.error("Error fetching projects:", error);
+    return <div>Error loading projects. Please try again later.</div>;
+  }
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
-          <InfoIcon size="16" strokeWidth={2} />
-          This is a protected page that you can only see as an authenticated
-          user
-        </div>
-      </div>
-
       <div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="font-bold text-2xl">Your Autoforge Projects</h2>

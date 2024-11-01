@@ -1,8 +1,8 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { redirect, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/utils/supabase/client";
 
 interface AwsResource {
   type: string;
@@ -25,52 +25,45 @@ const ResourceCard: React.FC<AwsResource> = ({ type, count, details }) => (
   </div>
 );
 
-export default function ProjectDashboard() {
-  const params = useParams();
-  const id = params.id as string;
-  const [project, setProject] = useState<Project | null>(null);
+export default async function ProjectDashboard({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const supabase = createClient();
 
-  useEffect(() => {
-    if (id) {
-      // TODO: Replace with actual data fetching logic
-      const fetchProject = async () => {
-        // Simulating API call
-        setProject({
-          id: id,
-          name: `Project ${id}`,
-          description: "This is a project description",
-          awsResources: [
-            {
-              type: "EC2 Instances",
-              count: 5,
-              details: "Running in us-west-2",
-            },
-            { type: "S3 Buckets", count: 3, details: "Total storage: 500GB" },
-            {
-              type: "RDS Databases",
-              count: 2,
-              details: "MySQL and PostgreSQL",
-            },
-            {
-              type: "Lambda Functions",
-              count: 10,
-              details: "Various microservices",
-            },
-            { type: "ECS Clusters", count: 1, details: "3 services running" },
-            {
-              type: "CloudFront Distributions",
-              count: 2,
-              details: "For web and API",
-            },
-          ],
-        });
-      };
+  // Check if user is authenticated
+  const {
+    data: { session },
+    error: authError,
+  } = await supabase.auth.getSession();
+  if (!session) {
+    redirect("/login");
+  }
 
-      fetchProject();
-    }
-  }, [id]);
+  // Get the project data and check user permissions in a single query
+  const { data: project, error } = await supabase
+    .from("projects")
+    .select(
+      `
+      *,
+      project_members!inner (
+        user_id
+      )
+    `
+    )
+    .eq("id", params.id)
+    .eq("project_members.user_id", session.user.id)
+    .single();
 
-  if (!project) return <div>Loading...</div>;
+  if (error) {
+    // If error is 404, user doesn't have access
+    return <div>You don't have permission to view this project</div>;
+  }
+
+  if (!project) {
+    return <div>Project not found</div>;
+  }
 
   return (
     <div className="p-4 relative">
@@ -86,11 +79,13 @@ export default function ProjectDashboard() {
       </h1>
       <p className="text-gray-600 mb-6">{project.description}</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {project.awsResources.map((resource, index) => (
-          <ResourceCard key={index} {...resource} />
-        ))}
-      </div>
+      {project.awsResources && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {project.awsResources.map((resource, index) => (
+            <ResourceCard key={index} {...resource} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
