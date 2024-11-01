@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { SendIcon } from "lucide-react";
+import { SendIcon, Loader2 } from "lucide-react";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
 
 export default function AIAssistantTab({ project }: { project: any }) {
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState<
-    Array<{
-      role: "user" | "assistant";
-      content: string;
-      timestamp: Date;
-    }>
-  >([
+  const [chatHistory, setChatHistory] = useState<Message[]>([
     {
       role: "assistant",
       content:
@@ -27,7 +27,7 @@ export default function AIAssistantTab({ project }: { project: any }) {
 
     const newMessage = {
       role: "user" as const,
-      content: message,
+      content: message.trim(),
       timestamp: new Date(),
     };
 
@@ -35,9 +35,10 @@ export default function AIAssistantTab({ project }: { project: any }) {
     setMessage("");
     setIsLoading(true);
 
-    // TODO: Implement actual LLM call here
-    // Simulate response for now
-    setTimeout(() => {
+    try {
+      // TODO: Replace with actual API call to your LLM service
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setChatHistory((prev) => [
         ...prev,
         {
@@ -47,21 +48,33 @@ export default function AIAssistantTab({ project }: { project: any }) {
           timestamp: new Date(),
         },
       ]);
+    } catch (error) {
+      console.error("Error processing message:", error);
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "I apologize, but I encountered an error processing your request. Please try again.",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-180px)]">
+    <div className="h-full flex flex-col">
       {/* Chat History */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
+      <div className="flex-1 overflow-auto p-4 space-y-4 bg-gray-50">
+        <div className="max-w-3xl mx-auto">
           {chatHistory.map((msg, idx) => (
             <div
               key={idx}
               className={`flex ${
                 msg.role === "assistant" ? "justify-start" : "justify-end"
-              }`}
+              } mb-4`}
             >
               <div
                 className={`max-w-[80%] rounded-lg p-4 ${
@@ -70,7 +83,7 @@ export default function AIAssistantTab({ project }: { project: any }) {
                     : "bg-blue-500 text-white"
                 }`}
               >
-                <p>{msg.content}</p>
+                <p className="whitespace-pre-wrap">{msg.content}</p>
                 <p className="text-xs mt-1 opacity-70">
                   {msg.timestamp.toLocaleTimeString()}
                 </p>
@@ -80,11 +93,7 @@ export default function AIAssistantTab({ project }: { project: any }) {
           {isLoading && (
             <div className="flex justify-start">
               <div className="bg-white shadow-sm rounded-lg p-4">
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
-                </div>
+                <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
               </div>
             </div>
           )}
@@ -92,8 +101,8 @@ export default function AIAssistantTab({ project }: { project: any }) {
       </div>
 
       {/* Message Input */}
-      <div className="bg-white border-t">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="bg-white border-t p-4">
+        <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="flex space-x-4">
             <input
               type="text"
@@ -101,16 +110,24 @@ export default function AIAssistantTab({ project }: { project: any }) {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Ask about AWS infrastructure..."
               className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
             />
             <button
               type="submit"
               disabled={isLoading || !message.trim()}
               className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              Send
               {isLoading ? (
-                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : null}
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <SendIcon className="h-4 w-4" />
+                  Send
+                </>
+              )}
             </button>
           </form>
         </div>
