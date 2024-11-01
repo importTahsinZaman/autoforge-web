@@ -9,7 +9,7 @@ import { SmtpMessage } from "../smtp-message";
 export default function Signup({ searchParams }: { searchParams: Message }) {
   if ("message" in searchParams) {
     return (
-      <div className="w-full flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
+      <div className="w-full max-w-sm flex items-center justify-center gap-2">
         <FormMessage message={searchParams} />
       </div>
     );
@@ -17,7 +17,7 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
 
   return (
     <>
-      <form className="flex flex-col min-w-64 max-w-64 mx-auto">
+      <form className="w-full max-w-sm flex flex-col">
         <h1 className="text-2xl font-medium">Sign up</h1>
         <p className="text-sm text text-foreground">
           Already have an account?{" "}
@@ -42,7 +42,7 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
           <FormMessage message={searchParams} />
         </div>
       </form>
-      <SmtpMessage />
+      {/* <SmtpMessage /> */}
     </>
   );
 }
