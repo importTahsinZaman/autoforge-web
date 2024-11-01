@@ -30,7 +30,7 @@ export default async function ProtectedPage() {
     <div className="flex-1 w-full flex flex-col gap-12">
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="font-bold text-2xl">Your Autoforge Projects</h2>
+          <h2 className="font-bold text-2xl">Your Projects</h2>
           <Link
             href="/projects/new"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

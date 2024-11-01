@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import NewProjectForm from "./new-project-form";
+import NewProjectForm from "../../../../components/new-project-form";
 
 export default async function NewProjectPage() {
   const supabase = createClient();
